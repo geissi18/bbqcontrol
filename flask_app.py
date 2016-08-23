@@ -1,7 +1,9 @@
 from flask import Flask, render_template, request
+from flask import jsonify
 
 app = Flask(__name__)
-#app.config["DEBUG"] = True
+
+settemp = 0
 
 @app.route('/', methods=["GET", "POST"])
 def index():
@@ -10,8 +12,10 @@ def index():
 @app.route('/bbqcontrol', methods=["GET", "POST"])
 def bbqcontrol():
     if request.method == 'POST':
-        #return "This is a POST!"
+        global settemp
         settemp = int(request.form["settemp"])
-        return "%d" %settemp
-        #return redirect(url_for("bbqcontrol"))
     return render_template("bbqcontrol.html")
+
+@app.route('/bbqcontrol/settemp')
+def test():
+    return jsonify(temp=settemp)
