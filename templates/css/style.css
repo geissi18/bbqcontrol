@@ -1,0 +1,18 @@
+body {
+	font: 100% Verdana, Geneva, Tahoma, sans-serif;
+	background: #333333;
+	color: #FFFFFF;
+}
+li {
+	border: thin #808080 solid;
+	list-style: none;
+	padding: 25px 25px 25px 25px;
+}
+
+h1 {
+	text-align: center;
+}
+
+a {
+	text-decoration: none;
+}
