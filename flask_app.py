@@ -14,6 +14,7 @@ def bbqcontrol():
     if request.method == 'POST':
         global settemp
         settemp = int(request.form["settemp"])
+        #Call bbqcontrol.py
     return render_template("bbqcontrol.html")
 
 @app.route('/bbqcontrol/settemp')
