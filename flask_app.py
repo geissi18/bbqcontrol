@@ -20,11 +20,12 @@ def bbqcontrol():
 @app.route('/bbqcontrol/settemp')
 def test():
     return jsonify(temp=settemp)
-	
+
 @app.route('/bbqcontrol/bbqvalues', methods=["GET", "POST"])
 def bbqvalues():
+    values = {"actualtemp":"", "u":"", "ui_prev":"", "e_prev":""}
     if request.method == 'POST':
-        def add_message():
-		content = request.get_json()
-		print content
-	return content
+        values = request.get_json(force=True)
+        return jsonify(values)
+        #print content
+    return jsonify(values)
