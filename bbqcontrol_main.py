@@ -34,9 +34,13 @@ Td = 1
 Kp = 1
 
 #Curl der Variablen. Variablen auf Webserver vorbesetzt
-
+bbqvalues = requests.get('http://geissi18.pythonanywhere.com/bbqcontrol/bbqvalues')
 outputdata = pid_controller(y, yc, h, Ti, Td, Kp, u0, e0)
 #Curl Post outputdata
+headers = {'Content-Type': 'application/json',}
+data = '{"actualtemp":"", "u":"", "ui_prev":"", "e_prev":""}'
+requests.post('http://geissi18.pythonanywhere.com/bbqcontrol/bbqvalues', headers=headers, data=data)
+
 #print (outputdata)
 
 #Einstellen des Servos

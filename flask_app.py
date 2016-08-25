@@ -4,6 +4,7 @@ from flask import jsonify
 app = Flask(__name__)
 
 settemp = 0
+values  = {"firstrun":"1"}
 
 @app.route('/', methods=["GET", "POST"])
 def index():
@@ -23,7 +24,8 @@ def test():
 
 @app.route('/bbqcontrol/bbqvalues', methods=["GET", "POST"])
 def bbqvalues():
-    values = {"actualtemp":"", "u":"", "ui_prev":"", "e_prev":""}
+	if values("firstrun")==1:
+		values = {"actualtemp":"0", "targettemp":"0", "u":"0", "ui_prev":"0", "e_prev":"0", "firstrun":"0"}
     if request.method == 'POST':
         values = request.get_json(force=True)
         return jsonify(values)
