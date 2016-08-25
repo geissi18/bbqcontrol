@@ -33,10 +33,11 @@ Ti = 1
 Td = 1
 Kp = 1
 
-outputdata = pid_controller(y, yc, h, Ti, Td, Kp, u0=0, e0=0)
-print (outputdata)
+#Curl der Variablen. Variablen auf Webserver vorbesetzt
 
-#Daten auf Webserver posten
+outputdata = pid_controller(y, yc, h, Ti, Td, Kp, u0, e0)
+#Curl Post outputdata
+#print (outputdata)
 
 #Einstellen des Servos
 
