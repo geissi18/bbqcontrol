@@ -21,6 +21,7 @@ import time
 import csv
 #import Adafruit_GPIO.SPI as SPI #Comment out for testing without target
 #import MAX6675.MAX6675 as MAX6675 #Comment out for testing without target
+#import servocontrol.servocontrol as servo
 
 #Main function for temperature control with PID
 def main(targettemp):
@@ -37,7 +38,7 @@ def main(targettemp):
 
     #Berechnen der PID-Controller Parameter
     #Sampling Time alle 5 Sekunden
-    samplingtime = 1
+    samplingtime = 5
     #Koeffizienten
     Ti = 50
     Td = 0.1
@@ -59,5 +60,5 @@ def main(targettemp):
         outputFile.write('%f\n' % jsonDataAsPythonValue['actualtemp'])
 
         #Einstellen des Servos
-        #tbd
+        servo(50)
         time.sleep(h)
