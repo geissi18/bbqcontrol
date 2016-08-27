@@ -4,7 +4,7 @@ from flask import jsonify
 app = Flask(__name__)
 
 settemp = 0
-values  = {"firstrun":"1"}
+values  = {""}
 
 @app.route('/', methods=["GET", "POST"])
 def index():
@@ -14,18 +14,16 @@ def index():
 def bbqcontrol():
     if request.method == 'POST':
         global settemp
-        settemp = int(request.form["settemp"])
-        #Call bbqcontrol.py
+        targettemp = int(request.form["settemp"])
+        #Call bbqcontrol_main.py
     return render_template("bbqcontrol.html")
 
 @app.route('/bbqcontrol/settemp')
-def test():
-    return jsonify(temp=settemp)
+def temp():
+    return jsonify(targettemp=settemp)
 
 @app.route('/bbqcontrol/bbqvalues', methods=["GET", "POST"])
 def bbqvalues():
-	if values("firstrun")==1:
-		values = {"actualtemp":"0", "targettemp":"0", "u":"0", "ui_prev":"0", "e_prev":"0", "firstrun":"0"}
     if request.method == 'POST':
         values = request.get_json(force=True)
         return jsonify(values)
