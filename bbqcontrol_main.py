@@ -18,60 +18,46 @@ import requests
 import json
 from PIDCtrl.python_pid_controller import pid_controller
 import time
+import csv
 #import Adafruit_GPIO.SPI as SPI #Comment out for testing without target
 #import MAX6675.MAX6675 as MAX6675 #Comment out for testing without target
 
 #Main function for temperature control with PID
 def main(targettemp):
+
     #Raspberry Pi hardware SPI configuration.
     SPI_PORT   = 0
     SPI_DEVICE = 0
-
-    #Auslesen der "settemp" vom Webserver
-    #url = 'http://geissi18.pythonanywhere.com/bbqcontrol/settemp'
-    #url = 'https://localhost/bbqcontrol/settemp'
-    #response = requests.get(url)
-    #json = response.json()
-    #targettemp = json['temp']
-    #print (json['temp'])
-    print ('Targettemp = %d °C' % targettemp)
 
     #Read actualtemp of sensor
     #Comment out for testing without target the following lines
     #sensor = MAX6675.MAX6675(spi=SPI.SpiDev(SPI_PORT, SPI_DEVICE))
     #actualTemp = sensor.readTempC()
     actualtemp = 200 # Only for testing
-    
-    print ('Actual Temperature: %f °C' % actualtemp)
 
     #Berechnen der PID-Controller Parameter
     #Sampling Time alle 5 Sekunden
-    samplingtime = 5
+    samplingtime = 1
     #Koeffizienten
-    Ti = 5
-    Td = 3
-    Kp = 0.8
+    Ti = 50
+    Td = 0.1
+    Kp = 1.8
 
     y, yc, h = actualtemp, targettemp, samplingtime
     correctionvalue = pid_controller(y, yc, h, Ti, Td, Kp)
     while 1:
-        print('Actual Temperature: %f C' % actualtemp)
         correctionvalue = pid_controller(y, yc, h, Ti, Td, Kp)
-        #print (outputdata)
-        #print(list(itertools.islice(outputdata, 1)))
-        print('Correctionvalue: %f' % next(correctionvalue))
-        #print('Correctionvalue: %f' % correctionvalue.next())
-        time.sleep(h)
-        #Curl der Variablen. Variablen auf Webserver vorbesetzt
-        #bbqvalues = requests.get('http://geissi18.pythonanywhere.com/bbqcontrol/bbqvalues')
-        #outputdata = pid_controller(y, yc, h, Ti, Td, Kp, u0, e0)
-        #Curl Post outputdata
         headers = {'Content-Type': 'application/json',}
-        data = '{"actualtemp":actualtemp, "correctionvalue":correctionvalue, "targettemp":targettemp}'
+        data = {}
+        data['actualtemp'] = actualtemp
+        data['correctionvalue'] = next(correctionvalue)
+        data['targettemp'] = targettemp
+        data = json.dumps(data)
         requests.post('http://geissi18.pythonanywhere.com/bbqcontrol/bbqvalues', headers=headers, data=data)
-
-        #print (outputdata)
+        jsonDataAsPythonValue = json.loads(data)
+        outputFile = open('data.txt', 'a')
+        outputFile.write('%f\n' % jsonDataAsPythonValue['actualtemp'])
 
         #Einstellen des Servos
         #tbd
-
+        time.sleep(h)
