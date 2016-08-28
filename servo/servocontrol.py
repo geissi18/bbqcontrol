@@ -3,7 +3,7 @@ import RPi.GPIO as GPIO
 import time
 import os
 
-def servocontrol(percent)
+def servocontrol(percent):
         # Pin 12 als Ausgang deklarieren
         GPIO.setwarnings(False)
         GPIO.setmode(GPIO.BOARD)

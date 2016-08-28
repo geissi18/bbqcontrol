@@ -19,9 +19,18 @@ import json
 from PIDCtrl.python_pid_controller import pid_controller
 import time
 import csv
-#import Adafruit_GPIO.SPI as SPI #Comment out for testing without target
-#import MAX6675.MAX6675 as MAX6675 #Comment out for testing without target
-#import servocontrol.servocontrol as servo
+import Adafruit_GPIO.SPI as SPI #Comment out for testing without target
+import MAX6675.MAX6675 as MAX6675 #Comment out for testing without target
+from servo.servocontrol import servocontrol as servo
+
+def clamp(n, minn, maxn):
+    if n < minn:
+        return minn
+    elif n > maxn:
+        return maxn
+    else:
+        return n
+
 
 #Main function for temperature control with PID
 def main(targettemp):
@@ -32,9 +41,8 @@ def main(targettemp):
 
     #Read actualtemp of sensor
     #Comment out for testing without target the following lines
-    #sensor = MAX6675.MAX6675(spi=SPI.SpiDev(SPI_PORT, SPI_DEVICE))
-    #actualTemp = sensor.readTempC()
-    actualtemp = 200 # Only for testing
+    sensor = MAX6675.MAX6675(spi=SPI.SpiDev(SPI_PORT, SPI_DEVICE))
+    #actualtemp = 200 # Only for testing
 
     #Berechnen der PID-Controller Parameter
     #Sampling Time alle 5 Sekunden
@@ -44,9 +52,10 @@ def main(targettemp):
     Td = 0.1
     Kp = 1.8
 
-    y, yc, h = actualtemp, targettemp, samplingtime
-    correctionvalue = pid_controller(y, yc, h, Ti, Td, Kp)
+    #correctionvalue = pid_controller(y, yc, h, Ti, Td, Kp)
     while 1:
+	actualtemp = sensor.readTempC()
+    	y, yc, h = actualtemp, targettemp, samplingtime
         correctionvalue = pid_controller(y, yc, h, Ti, Td, Kp)
         headers = {'Content-Type': 'application/json',}
         data = {}
@@ -60,5 +69,8 @@ def main(targettemp):
         outputFile.write('%f\n' % jsonDataAsPythonValue['actualtemp'])
 
         #Einstellen des Servos
-        servo(50)
+        servovalue = clamp(next(correctionvalue), 30, 50)
+	servo(servovalue)
+	print('Aktuelle Temp.: %f' % actualtemp)
+	print('Korrekturwert: %f' % servovalue)
         time.sleep(h)
